@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="relative min-h-screen w-full bg-[#020617] font-sans text-slate-200">
+    
+    <div class="fixed inset-0 z-0">
+        <img src="{{ url_for('auth.servir_banner', emp_id=emp_id_db) }}" 
+             class="w-full h-full object-cover brightness-[0.15] scale-105" alt="Fondo">
+        <div class="absolute inset-0 bg-gradient-to-b from-slate-950/50 via-transparent to-slate-950"></div>
+    </div>
+
+    <div class="relative z-10 max-w-2xl mx-auto px-4 py-8">
+        
+        <header class="flex items-center justify-between mb-10">
+            <div class="flex items-center gap-5">
+                <a href="{{ url_for('auth.dashboard') }}" 
+                   class="group flex items-center justify-center w-12 h-12 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md hover:bg-sky-500/20 hover:border-sky-500/50 transition-all duration-300">
+                    <svg class="w-6 h-6 text-white group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </a>
+                <div>
+                    <h1 class="text-2xl font-black text-white tracking-tight">Mi Agenda</h1>
+                    <p class="text-sky-400 text-[10px] font-bold uppercase tracking-[0.3em]">Gestión de Citas</p>
+                </div>
+            </div>
+            
+            <div class="bg-sky-500/10 border border-sky-500/20 px-4 py-2 rounded-2xl backdrop-blur-md">
+                <span class="text-sky-400 font-black text-xl">{{ total_citas }}</span>
+                <span class="text-sky-400/60 text-[10px] uppercase font-bold ml-1">Total</span>
+            </div>
+        </header>
+
+        <div class="space-y-12">
+            {% for periodo, citas in agenda.items() %}
+                {% if citas %}
+                <section>
+                    <div class="flex items-center gap-4 mb-6">
+                        <h2 class="text-sm font-black uppercase tracking-[0.3em] text-sky-500/80 whitespace-nowrap">
+                            {% if periodo == 'hoy' %} HOY {% elif periodo == 'manana' %} MAÑANA {% else %} PRÓXIMAMENTE {% endif %}
+                        </h2>
+                        <div class="h-[1px] w-full bg-gradient-to-r from-sky-500/50 to-transparent"></div>
+                    </div>
+
+                    <div class="space-y-6">
+                        {% for res, cli in citas %}
+                        <div class="relative group">
+                            <div class="absolute -inset-0.5 bg-gradient-to-r from-sky-500 to-indigo-500 rounded-[2.5rem] opacity-0 group-hover:opacity-10 transition duration-500 blur"></div>
+                            <div class="relative bg-slate-900/60 backdrop-blur-2xl p-6 rounded-[2rem] border border-white/5 shadow-2xl">
+                                
+                                <div class="flex flex-col gap-5">
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-xl bg-sky-500/10 flex items-center justify-center">
+                                                <svg class="w-5 h-5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <p class="text-white font-black text-lg leading-none">
+                                                    {{ res.res_hora | hora_es }}
+                                                        </p>
+                                                    <p class="text-slate-500 text-[9px] uppercase font-bold tracking-widest mt-1">{{ res.res_fecha | fecha_es }}</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-white/5 text-slate-400 border border-white/10">
+                                            {{ res.res_estado }}
+                                        </span>
+                                    </div>
+
+                                    <div>
+                                        <h3 class="text-xl font-bold text-white">
+                                            {{ cli.cli_nombre | title }}
+                                            {% if cli.cli_alias %} <span class="text-sky-400/50 text-sm italic">"{{ cli.cli_alias }}"</span> {% endif %}
+                                        </h3>
+                                        <p class="text-slate-400 text-sm mt-1 flex items-center gap-2">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-sky-500"></span>
+                                            {{ res.res_tipo_servicio }}
+                                        </p>
+                                    </div>
+
+                                    {% if cli.cli_notas_personales %}
+                                    <div class="bg-amber-500/5 border-l-2 border-amber-500/30 p-3 rounded-r-xl">
+                                        <p class="text-[11px] text-slate-400 leading-relaxed italic">"{{ cli.cli_notas_personales }}"</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </section>
+                {% endif %}
+            {% endfor %}
+
+{% if total_citas == 0 %}
+<div class="flex flex-col items-center justify-center py-16 px-4 bg-white/[0.02] rounded-[3rem] border border-dashed border-white/10 backdrop-blur-sm">
+    <div class="relative mb-6">
+        <div class="absolute inset-0 bg-sky-500/10 blur-3xl rounded-full"></div>
+        
+        <svg class="relative w-24 h-24 text-slate-600/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M10 14l2 2 4-4" class="opacity-30" />
+        </svg>
+    </div>
+
+    <h3 class="text-white font-bold text-lg mb-1">Todo despejado por ahora</h3>
+</div>
+{% endif %}
+
+        <footer class="mt-20 mb-8 text-center">
+            <p class="text-slate-600 text-[10px] uppercase font-bold tracking-[0.5em]">APOYADO POR AgendApp</p>
+        </footer>
+    </div>
+</div>
+{% endblock %}
