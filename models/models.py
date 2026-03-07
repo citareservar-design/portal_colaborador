@@ -6,7 +6,6 @@ class Empresa(db.Model):
     __tablename__ = 'EMPRESAS'
     emp_id = db.Column(db.String(2), primary_key=True)
     emp_razon_social = db.Column(db.String(60))
-    emp_ruta_logo = db.Column(db.String(1000))
     emp_ruta_recursos = db.Column(db.String(255))
     emp_nit = db.Column(db.String(12))
 
